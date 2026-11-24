@@ -63,17 +63,18 @@ export default function Home() {
   const [inputType, setInputType] = useState<'openapi' | 'description'>('openapi');
   const [input, setInput] = useState(sampleSpec);
   const [strategy, setStrategy] = useState<Strategy>('adaptive');
-  const [tests, setTests] = useState<Test[]>(demos);
-  const [demoMode, setDemoMode] = useState(true);
+  const [tests, setTests] = useState<Test[]>([]);
+  // Open in Live AI mode so a presentation never mistakes sample cases for live output.
+  const [demoMode, setDemoMode] = useState(false);
   const [hasLiveRun, setHasLiveRun] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState('All tests');
   const [section, setSection] = useState('Overview');
   const [expanded, setExpanded] = useState<string | null>(null);
-  const [elapsed, setElapsed] = useState(1.24);
-  const [tokenCount, setTokenCount] = useState(1840);
-  const [coverage, setCoverage] = useState(86);
+  const [elapsed, setElapsed] = useState(0);
+  const [tokenCount, setTokenCount] = useState(0);
+  const [coverage, setCoverage] = useState(0);
   const [inputOpen, setInputOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const duplicateCount = tests.length - new Set(tests.map(t => `${t.category}:${t.description.toLowerCase().replace(/[^a-z0-9]/g, '')}`)).size;
@@ -124,11 +125,11 @@ export default function Home() {
     </aside>
 
     <div className="main-area">
-      <header className="topbar"><div className="top-left"><button className="menu-button" onClick={() => setSidebarOpen(!sidebarOpen)}><Menu size={19}/></button><span className="breadcrumb">Workspace <span>/</span> <b>{section}</b></span></div><div className="top-actions"><div className="api-status"><i/> API operational</div><button className="icon-button" title="Help"><CircleHelp size={17}/></button><div className="top-avatar">AK</div></div></header>
+      <header className="topbar"><div className="top-left"><button className="menu-button" onClick={() => setSidebarOpen(!sidebarOpen)}><Menu size={19}/></button><span className="breadcrumb">Workspace <span>/</span> <b>{section}</b></span></div><div className="top-actions"><div className="api-status"><i/> Live generation</div><button className="icon-button" title="Help"><CircleHelp size={17}/></button><div className="top-avatar">AK</div></div></header>
       <div className="content-wrap">
-        <div className="page-heading"><div><div className="eyebrow"><span className="eyebrow-line"/> API QUALITY WORKSPACE</div><h1>Good morning, Alex <span className="wave">✳</span></h1><p>Generate evidence-grounded API tests and measure their quality.</p></div><div className="heading-actions"><div className={`mode-chip ${demoMode ? 'demo' : 'live'}`}><span/>{demoMode ? 'Demo mode' : 'Live AI'}<button onClick={() => {setDemoMode(!demoMode); setError('');}} aria-label="Toggle demo mode"><span className="switch-knob"/></button></div><button className="button-primary" onClick={() => setInputOpen(true)}><Plus size={16}/> New generation</button></div></div>
+        <div className="page-heading"><div><div className="eyebrow"><span className="eyebrow-line"/> API QUALITY WORKSPACE</div><h1>Good morning, Alex <span className="wave">✳</span></h1><p>Generate evidence-grounded API tests and measure their quality.</p></div><div className="heading-actions"><div className={`mode-chip ${demoMode ? 'demo' : 'live'}`}><span/>{demoMode ? 'Demo mode' : 'Claude AI'}<button onClick={() => {setDemoMode(!demoMode); setError('');}} aria-label="Toggle demo mode"><span className="switch-knob"/></button></div><button className="button-primary" onClick={() => setInputOpen(true)}><Plus size={16}/> New generation</button></div></div>
 
-        {(demoMode || !hasLiveRun) && <div className="demo-banner"><div className="demo-icon"><Beaker size={15}/></div><span><b>{demoMode?'Demo data active':'Sample results shown'}</b> — {demoMode ? <>Sample results are shown. Switch to Live AI and add <code>OPENAI_API_KEY</code> to your server environment to generate real test cases.</> : <>The dashboard keeps the sample run until your first live generation succeeds.</>}</span><button onClick={() => setInputOpen(true)}>{demoMode?'Configure live AI':'Generate live tests'} <ArrowUpRight size={13}/></button></div>}
+        {(demoMode || !hasLiveRun) && <div className="demo-banner"><div className="demo-icon"><Beaker size={15}/></div><span><b>{demoMode?'Demo data active':'Ready for a Claude run'}</b> — {demoMode ? <>Sample results are shown. Switch to Claude AI and add <code>ANTHROPIC_API_KEY</code> to your server environment to generate real test cases.</> : <>No sample cases are loaded. Add your server-side <code>ANTHROPIC_API_KEY</code> to <code>.env.local</code>, restart the server, then generate test cases from the API specification below.</>}</span><button onClick={() => setInputOpen(true)}>{demoMode?'Configure Claude AI':'Generate with Claude'} <ArrowUpRight size={13}/></button></div>}
         {error && <div className="error-banner">{error}<button onClick={() => setError('')}><X size={15}/></button></div>}
 
         <section className="metrics-grid">

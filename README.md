@@ -11,7 +11,7 @@ cp .env.example .env.local
 npm run dev
 ```
 
-Open `http://localhost:3000`. Demo mode is enabled by default and uses clearly labeled sample data. Switch to Live AI to call the server-side `/api/generate` route. The API key is read only on the server and is never sent to the browser. `OPENAI_MODEL` can optionally select a compatible OpenAI chat-completions model.
+Open `http://localhost:3000`. The app opens in Claude AI mode. Add your Anthropic API key to `ANTHROPIC_API_KEY` in `.env.local`, then restart the dev server. It defaults to Claude Haiku 5.5; `ANTHROPIC_MODEL` can select another model available to your Anthropic API account. The key is read only on the server and is never sent to the browser. Demo mode remains available from the mode toggle and uses clearly labeled sample data.
 
-Live generation validates the returned JSON with Zod. If the provider is unavailable, unconfigured, or returns invalid output, the UI keeps the current results and displays an error.
+Live generation calls Anthropic's Messages API and validates the returned JSON with Zod. If the provider is unavailable, unconfigured, or returns invalid output, the UI keeps the current results and displays an error.
 # promptEnggProject
